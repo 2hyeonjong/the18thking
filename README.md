@@ -8,4 +8,4 @@
   <li>blackbox파일 추가</li>
 </ul>
 **관련 링크**</br>
-<a>https://www.lesstif.com/pages/viewpage.action?pageId=20775949</a>
+<a href=https://www.lesstif.com/pages/viewpage.action?pageId=20775949>git 설명서</a>
