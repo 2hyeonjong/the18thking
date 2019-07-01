@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # 파이썬에서 openCV를 사용하기 위해
 import cv2
 
