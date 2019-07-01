@@ -12,7 +12,7 @@ def on_press(event,x,y,flags,param):
 			
 					
 
-cv2.namedWindow('image')
+#cv2.namedWindow('image')
 cv2.setMouseCallback('image', on_press)
 
 image = cv2.imread("../data/lena.jpg",cv2.IMREAD_GRAYSCALE)
