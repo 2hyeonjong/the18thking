@@ -8,72 +8,80 @@
 #include<stdlib.h>
 #include<opencv2/opencv.hpp>
 #define SIZE 1024
-/*void *t_function(void *data)
-{
-	pid_t pid;
-	pthread_t tid;
-	pid=getpid();
-	tid=pthred_self();
 
-	char* thread_name=(char*)data;
-	int i= 0;
-}*/
-void* firstThreadRun()
+using namespace cv;
+using namespace std;
+
+void* firstThreadRun(void *)
 {	
+    time_t t =time(NULL), start, finish;
+    struct tm tm = *localtime(&t);
+    int year = tm.tm_year+1900, mon = tm.tm_mon+1, day=tm.tm_mday, hour=tm.tm_hour;
+    int min=tm.tm_min;
+    char s[SIZE];
+	char c[SIZE];
 	Mat img_color;
 
 	//비디오 캡쳐 초기화
+    sprintf(s, "%d%d%d",year,mon,day);
+    mkdir(s, 0776);
+
 	VideoCapture cap("res.avi");
 	if (!cap.isOpened()) {
 		cerr << "에러 - 카메라를 열 수 없습니다.\n";
-		return -1;
+		exit(0);	
 	}
-
-
+	
+	
 	while(1)
 	{
+		//동영상 파일 저장준비
+		sprintf(c, "%d%d.avi", hour,min);
+		Size size = Size((int)cap.get(CAP_PROP_FRAME_WIDTH),
+			(int)cap.get(CAP_PROP_FRAME_HEIGHT));
+		VideoWriter writer;
+		double fps =30.0;
+		writer.open(c, VideoWriter::fourcc('M','J','P','G'),fps,size,true);
+	
+		if (!writer.isOpened())
+		{	
+		printf("error init_video");
+		exit(0);
+		}
 		// 카메라로부터 캡쳐한 영상을 frame에 저장합니다.
 		cap.read(img_color);
 		if (img_color.empty()) {
 			cerr << "빈 영상이 캡쳐되었습니다.\n";
 			break;
 		}
-
+		writer.write(img_color);			
 		// 영상을 화면에 보여줍니다. 
 		imshow("Color", img_color);
 
-
             // ESC 키를 입력하면 루프가 종료됩니다. 
-
+		//sleep(60);
 		if (waitKey(25) >= 0)
+			
 			break;
 	}
 
 }	
 
-void* secondThreadRun()
+void* secondThreadRun(void *)
 {
-		while(1)
-		{
-			sleep(3);
-			printf("start Second Thread\n");			
-		}
+	while(1)
+	{
+		printf("2");
+		sleep(3);
+	}
 }
+
 
 int main()
 {
 	pthread_t firstThread, secondThread;
 	int threadErr;
-    time_t t =time(NULL);
-    struct tm tm = *localtime(&t);
-    int year = tm.tm_year+1900, mon = tm.tm_mon+1, day=tm.tm_mday, hour=tm.tm_hour;
-    int min=tm.tm_min;
-    char s[SIZE];
 
-    sprintf(s, "%d%d%d_%d%d",year,mon,day,hour,min);
-    if(mkdir(s, 0776)==-1){
-        printf("error()\n");
-    }
 
 	if(threadErr = pthread_create(&firstThread, NULL, firstThreadRun, NULL))
 	{
@@ -85,7 +93,6 @@ int main()
 	{
 		printf("Thread Err = %d", threadErr);
 	}
-
 	while(1);
-    
 }
+
