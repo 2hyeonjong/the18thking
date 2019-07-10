@@ -14,17 +14,14 @@ using namespace std;
 
 void* firstThreadRun(void *)
 {	
-    time_t t =time(NULL), start, finish;
-    struct tm tm = *localtime(&t);
-    int year = tm.tm_year+1900, mon = tm.tm_mon+1, day=tm.tm_mday, hour=tm.tm_hour;
-    int min=tm.tm_min;
     char s[SIZE];
 	char c[SIZE];
+	char direc[SIZE];
+	char s_c[2] ="/";
 	Mat img_color;
 
 	//비디오 캡쳐 초기화
-    sprintf(s, "%d%d%d",year,mon,day);
-    mkdir(s, 0776);
+    
 
 	VideoCapture cap("res.avi");
 	if (!cap.isOpened()) {
@@ -35,19 +32,31 @@ void* firstThreadRun(void *)
 	
 	while(1)
 	{
+    	time_t t =time(NULL), start, finish;
+		struct tm tm = *localtime(&t);
+
+		int min=tm.tm_min;
+    	int year = tm.tm_year+1900, mon = tm.tm_mon+1, day=tm.tm_mday, hour=tm.tm_hour;
+		sprintf(s, "%d%d%d%d",year,mon,day,hour);
+   		mkdir(s, 0776);
+
+		printf("process\n");
+		sleep(1);
 		//동영상 파일 저장준비
 		sprintf(c, "%d%d.avi", hour,min);
 		Size size = Size((int)cap.get(CAP_PROP_FRAME_WIDTH),
 			(int)cap.get(CAP_PROP_FRAME_HEIGHT));
 		VideoWriter writer;
 		double fps =30.0;
-		writer.open(c, VideoWriter::fourcc('M','J','P','G'),fps,size,true);
+		sprintf(direc, "%s%s%s",s, s_c,c);
+		writer.open(direc, VideoWriter::fourcc('M','J','P','G'),fps,size,true);
 	
 		if (!writer.isOpened())
 		{	
 		printf("error init_video");
 		exit(0);
 		}
+
 		// 카메라로부터 캡쳐한 영상을 frame에 저장합니다.
 		cap.read(img_color);
 		if (img_color.empty()) {
@@ -56,12 +65,11 @@ void* firstThreadRun(void *)
 		}
 		writer.write(img_color);			
 		// 영상을 화면에 보여줍니다. 
-		imshow("Color", img_color);
+		//imshow("Color", img_color);
 
             // ESC 키를 입력하면 루프가 종료됩니다. 
 		//sleep(60);
 		if (waitKey(25) >= 0)
-			
 			break;
 	}
 
