@@ -85,7 +85,7 @@ void* firstThreadRun(void *)
 	//비디오 캡쳐 초기화
     
 
-	VideoCapture cap("res.avi");
+	VideoCapture cap("nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)NV12, framerate=(fraction)24/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
 	if (!cap.isOpened()) {
 		cerr << "에러 - 카메라를 열 수 없습니다.\n";
 		exit(0);	
