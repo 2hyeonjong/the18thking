@@ -3,8 +3,8 @@
 double print_avail(unsigned int blocks, unsigned int avail)
 {
 	double t_avail = ((double)avail / (double)blocks)*100;
-   printf("\t %u \t %u \t %.2f%% \n",blocks,avail, t_avail);
-   return t_avail;
+	printf("\t %u \t %u \t %.2f%% \n",blocks, avail, t_avail);
+	return t_avail;
 }
 
 const char *MMOUNT = "/proc/mounts";
@@ -100,20 +100,15 @@ void* secondThreadRun(void *)
 		fprintf(stderr, "%s Directory Scan Error\n", path);
 		exit(0);
 	}
-	for(idx = count -1; idx >= 0; idx--)
+	/*for(idx = count -1; idx >= 0; idx--)
 	{
 		printf("%s\n", namelist[idx]->d_name);
-	}
+	}*/
    while(1)	
     {
         while(dfget(MP))
         {
-			available =print_avail(MP->size.blocks, MP->size.avail);
-/*            printf("%s \t %s \t %lu \t %lu \t %f \n", MP->mountdir, MP->devname, 
-                                MP->size.blocks,
-                                MP->size.avail,
-										 ((double)MP->size.avail/(double) MP->size.blocks)*100);						
-				// (MP->size.avail /MP->size.blocks)*100.0); */
+		available =print_avail(MP->size.blocks, MP->size.avail);
         }
         printf("=====================================================\n\n");
         sleep(1);
