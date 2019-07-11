@@ -4,7 +4,7 @@
 using namespace cv;
 using namespace std;
 
-void print_avail(unsigned int blocks, unsigned int avail);
+double print_avail(unsigned int blocks, unsigned int avail);
 
 const char *MMOUNT = "/proc/mounts";
 
@@ -92,9 +92,11 @@ void* firstThreadRun(void *)
 	}
 	
 	
+	
 	while(1)
 	{
-    	time_t t =time(NULL), start, finish,now;
+		
+    	time_t t =time(NULL);
 		struct tm tm = *localtime(&t);
 		double duration;
 
@@ -107,6 +109,7 @@ void* firstThreadRun(void *)
 		sleep(1);
 		//동영상 파일 저장준비
 		sprintf(c, "%d%d.avi", hour,min);
+		
 		Size size = Size((int)cap.get(CAP_PROP_FRAME_WIDTH),
 			(int)cap.get(CAP_PROP_FRAME_HEIGHT));
 		VideoWriter writer;
@@ -116,8 +119,8 @@ void* firstThreadRun(void *)
 	
 		if (!writer.isOpened())
 		{	
-		printf("error init_video");
-		exit(0);
+			printf("error init_video");
+			exit(0);
 		}
 		while(1)
 			{// 카메라로부터 캡쳐한 영상을 frame에 저장합니다.			
@@ -132,7 +135,7 @@ void* firstThreadRun(void *)
 
 				// ESC 키를 입력하면 루프가 종료됩니다. 
 			//sleep(60);
-			if (waitKey(25) >= 0)
+			if (waitKey(20) >= 0)
 				break;
 			time_t timer;
 			struct tm *tt;
@@ -154,18 +157,32 @@ void* secondThreadRun(void *)
 		printf("2");
 		sleep(3);
 	}*/
+	
 	MOUNTP *MP;
     if ((MP=dfopen()) == NULL)
     {
         perror("error");
         exit(0);
     }
- 
-   while(1)
+	const char *path =".";
+	struct dirent **namelist;
+	int count;
+	int idx;
+	double available;
+	if((count = scandir(path, &namelist, NULL, alphasort))==-1)
+	{
+		fprintf(stderr, "%s Directory Scan Error\n", path);
+		exit(0);
+	}
+	for(idx = count -1; idx >= 0; idx--)
+	{
+		printf("%s\n", namelist[idx]->d_name);
+	}
+   while(1)	
     {
         while(dfget(MP))
         {
-				print_avail(MP->size.blocks, MP->size.avail);
+			available =print_avail(MP->size.blocks, MP->size.avail);
 /*            printf("%s \t %s \t %lu \t %lu \t %f \n", MP->mountdir, MP->devname, 
                                 MP->size.blocks,
                                 MP->size.avail,
@@ -174,7 +191,18 @@ void* secondThreadRun(void *)
         }
         printf("=========================\n\n");
         sleep(1);
+		if(available >20.0)
+		{
+			rmdir(namelist[0]->d_name);
+		}
     }
+	
+	//data memroy relese
+	for(idx = 0; idx <count; idx++)
+	{
+		free(namelist[idx]);
+	}
+	free(namelist);
 }
 
 
@@ -199,8 +227,9 @@ int main()
 	while(1);
 }
 
-void print_avail(unsigned int blocks, unsigned int avail)
+double print_avail(unsigned int blocks, unsigned int avail)
 {
 	double t_avail = ((double)avail / (double)blocks)*100;
-   printf("\t %u \t %u \t %f \n",blocks,avail, t_avail);
+   printf("\t %u \t %u \t %.2f%% \n",blocks,avail, t_avail);
+   return t_avail;
 }
