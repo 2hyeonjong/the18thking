@@ -152,6 +152,7 @@ void* firstThreadRun(void *)
 
 void* secondThreadRun(void *)
 {
+	sleep(1);
 	/*while(1)
 	{
 		printf("2");
@@ -169,6 +170,7 @@ void* secondThreadRun(void *)
 	int count;
 	int idx;
 	double available;
+	char rm[]= "rm -rf -i ";
 	if((count = scandir(path, &namelist, NULL, alphasort))==-1)
 	{
 		fprintf(stderr, "%s Directory Scan Error\n", path);
@@ -191,9 +193,10 @@ void* secondThreadRun(void *)
         }
         printf("=========================\n\n");
         sleep(1);
-		if(available >20.0)
+		if(available <24.00)
 		{
-			rmdir(namelist[0]->d_name);
+			strcat(rm, namelist[2]->d_name );
+			system(rm);
 		}
     }
 	
