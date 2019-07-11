@@ -11,8 +11,8 @@ void* firstThreadRun(void *)
 
 	//비디오 캡쳐 초기화
     
-	VideoCapture cap("res.avi");
-	//VideoCapture cap("nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)NV12, framerate=(fraction)24/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
+	//VideoCapture cap("res.avi");
+	VideoCapture cap("nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
 	if (!cap.isOpened()) {
 		cerr << "에러 - 카메라를 열 수 없습니다.\n";
 		exit(0);	
@@ -65,7 +65,7 @@ void* firstThreadRun(void *)
 
 				// ESC 키를 입력하면 루프가 종료됩니다. 
 			//sleep(60);
-			if (waitKey(10) >= 0)
+			if (waitKey(33) >= 0)
 				break;
 			time_t timer;
 			struct tm *tt;
