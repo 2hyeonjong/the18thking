@@ -85,7 +85,7 @@ void* firstThreadRun(void *)
 	//비디오 캡쳐 초기화
     
 	VideoCapture cap("res.avi");
-	//VideoCapture cap("nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)NV12, framerate=(fraction)24/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
+	//VideoCapture cap("nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink");
 	if (!cap.isOpened()) {
 		cerr << "에러 - 카메라를 열 수 없습니다.\n";
 		exit(0);	
@@ -110,12 +110,12 @@ void* firstThreadRun(void *)
 		//동영상 파일 저장준비
 		sprintf(c, "%d%d.avi", hour,min);
 		
-		Size size = Size((int)cap.get(CAP_PROP_FRAME_WIDTH),
+		Size size = Size((int)cap.get(CAP_PROP_FRAME_WIDTH ),
 			(int)cap.get(CAP_PROP_FRAME_HEIGHT));
 		VideoWriter writer;
-		double fps =30.0;
+		double fps =15.0;
 		sprintf(direc, "%s%s%s",s, s_c,c);
-		writer.open(direc, VideoWriter::fourcc('M','J','P','G'),fps,size,true);
+		writer.open(direc, VideoWriter::fourcc('D','I','V','X'),fps,size,true);
 	
 		if (!writer.isOpened())
 		{	
@@ -125,6 +125,9 @@ void* firstThreadRun(void *)
 		while(1)
 			{// 카메라로부터 캡쳐한 영상을 frame에 저장합니다.			
 			cap.read(img_color);
+			cv::flip(img_color, img_color, -1);
+			cv::flip(img_color, img_color, 1);
+
 			if (img_color.empty()) {
 				cerr << "빈 영상이 캡쳐되었습니다.\n";
 				break;
@@ -135,7 +138,7 @@ void* firstThreadRun(void *)
 
 				// ESC 키를 입력하면 루프가 종료됩니다. 
 			//sleep(60);
-			if (waitKey(20) >= 0)
+			if (waitKey(10) >= 0)
 				break;
 			time_t timer;
 			struct tm *tt;
@@ -191,9 +194,9 @@ void* secondThreadRun(void *)
 										 ((double)MP->size.avail/(double) MP->size.blocks)*100);						
 				// (MP->size.avail /MP->size.blocks)*100.0); */
         }
-        printf("=========================\n\n");
+        printf("=====================================================\n\n");
         sleep(1);
-		if(available <24.00)
+		if(available <20.00)
 		{
 			strcat(rm, namelist[2]->d_name );
 			system(rm);
